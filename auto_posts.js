@@ -4,10 +4,13 @@
 // @match        *://cms.webug.se/grupp11/wordpress/wp-admin/post-new.php*
 // @description   Try to take over the world!
 // @run-at       document-idle
+// @icon         https://www.google.com/s2/favicons?sz=64&domain=webug.se
 // @grant        none
+// @require      https://raw.githubusercontent.com/LenaSYS/ContextFreeLib/refs/heads/master/js/contextfreegrammar.js
 // ==/UserScript==
 
 (function() {
+
   // --- LocalStorage-keys ---
   const LS_TARGET = '__bulk_target__';
   const LS_COUNT  = '__bulk_count__';
@@ -32,8 +35,8 @@
   // Temporary word generator – needs to be replaced
   function makePost(i) {
       return {
-      title:   `Auto Title #${i + 1}`,
-      content: `<p>Auto Content #${i + 1}</p>`
+      title:   `Auto Title #${i + 1} Random Number = ${localStorage.getItem("test_number")}`,
+      content: `<p>${localStorage.getItem("ls_content")}</p>`
     };
   }
 
