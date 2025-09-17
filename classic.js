@@ -94,43 +94,41 @@
         }
     }
 
+    async function createPost() {
         let currentPost = getLocalStorage(LS_COUNT);
         const totalPosts = getLocalStorage(LS_TARGET);
 
         console.log(`Progress: ${currentPost}/${totalPosts}`);
 
-        await delay(5000);
-        addTitle();
-
-        await delay(5000);
-        addParagraf();
-
-        await delay(5000);
-        publishPost();
-
-        currentPost++;
-        storeLocalStorage(LS_TARGET, currentPost);
-
         if (currentPost < totalPosts) {
-            // Current page URL
-            const urlParams = new URLSearchParams(window.location.search);
 
-            // Get "action" value
-            const action = urlParams.get("action");
+            currentPost++;
+            storeLocalStorage(LS_COUNT, currentPost);
 
-            console.log(action);
+            await delay(1000);
+            addTitle();
 
-            if (true) {
-                // Reload for the next post
-                await delay(10000)
-                window.location.href = "post-new.php";
+            await delay(1000);
+            addParagraph();
+
+            if (currentPost < totalPosts) {
+                // Open for the next post
+                await delay(1000);
+                window.open('http://cms.webug.se/grupp11/wordpress/wp-admin/post-new.php');
             }
 
+            await delay(2000);
+            publishPost();
         } else {
             console.log("All posts done!");
             localStorage.removeItem(LS_TARGET);
             localStorage.removeItem(LS_COUNT);
         }
+    }
+
+    async function run() {
+        showPrompt();
+        createPost();
     }
 
     await delay(2000);
