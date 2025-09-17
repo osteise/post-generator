@@ -13,6 +13,16 @@
     'use strict';
 
     // Your code here...
+
+    // --- LocalStorage-keys ---
+    const LS_TARGET = '__bulk_target__';
+    const LS_COUNT = '__bulk_count__';
+
+    // Prevent double run script inside iframes
+    if (window.top !== window.self){
+        return;
+    }
+
     function storeLocalStorage(key, value) {
         localStorage.setItem(key, String(value));
     }
