@@ -49,25 +49,22 @@
                 titlePromptText.className = "screen-reader-text";
             }
 
-            console.log("Title set in editor");
-            return;
+            console.log("Title added");
         }
     }
 
-    function addParagraf() {
-        // Get a paragraf window
-        let paragrafWindow = document.getElementById("tinymce");
+    function addParagraph() {
+        // Take iframe parent and take a second html tag to prevent run code inside the iframe
+        let iframe = document.getElementById("content_ifr");
 
-        if (paragrafWindow) {
-            let paragraf = paragrafWindow.firstElementChild;
+        if (iframe) {
+            let document = iframe.contentDocument || iframe.contentWindow.document;
+            let body = document.querySelector("body");
 
-            if (paragraf) {
-                 // Add paragraf
-                paragraf.innerHTML = `Auto Content #${1}`;
+            if (body) {
+                body.innerHTML = "<p>`Auto Title #${1}`</p>";
+                console.log("Paragraph added");
             }
-
-            console.log("Paragraf set in editor");
-            return;
         }
     }
 
@@ -80,7 +77,6 @@
         }
 
         console.log("Post published");
-        return;
     }
 
     async function run() {
@@ -93,11 +89,14 @@
             console.log(getLocalStorage(LS_TARGET));
             // default value = 5, 10 is to tell the browser its an integer
             const n = parseInt(prompt('How many posts do you want to create?', '5'), 10);
-            if (!Number.isFinite(n) || n <= 0) return;
+            if (!Number.isFinite(n) || n <= 0) {
+                return;
+            }
 
-            storeLocalStorage(LS_TARGET, n);
             storeLocalStorage(LS_COUNT, 0);
+            storeLocalStorage(LS_TARGET, n);
         }
+    }
 
         let currentPost = getLocalStorage(LS_COUNT);
         const totalPosts = getLocalStorage(LS_TARGET);
