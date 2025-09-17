@@ -115,14 +115,14 @@
                 // Open for the next post
                 await delay(1000);
                 window.open('http://cms.webug.se/grupp11/wordpress/wp-admin/post-new.php');
+            } else {
+                console.log("All posts done!");
+                localStorage.removeItem(LS_TARGET);
+                localStorage.removeItem(LS_COUNT);
             }
 
             await delay(2000);
             publishPost();
-        } else {
-            console.log("All posts done!");
-            localStorage.removeItem(LS_TARGET);
-            localStorage.removeItem(LS_COUNT);
         }
     }
 
