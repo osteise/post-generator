@@ -79,11 +79,7 @@
         console.log("Post published");
     }
 
-    async function run() {
-        // --- LocalStorage-keys ---
-        const LS_TARGET = '__bulk_target__';
-        const LS_COUNT = '__bulk_count__';
-
+     function showPrompt() {
         // Ask how many posts to create, if its missing
         if (!getLocalStorage(LS_TARGET)) {
             console.log(getLocalStorage(LS_TARGET));
