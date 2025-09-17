@@ -36,12 +36,12 @@
         return new Promise(res => setTimeout(res, ms));
     }
 
-    function addTitle() {
+    function addTitle(titleText) {
         let title = document.getElementById("title");
 
         if (title) {
             // Add a title name
-            title.value = `Auto Title #${1}`;
+            title.value = titleText;
 
             let titlePromptText = document.getElementById("title-prompt-text");
             if (titlePromptText) {
@@ -53,7 +53,7 @@
         }
     }
 
-    function addParagraph() {
+    function addParagraph(paragraphText) {
         // Take iframe parent and take a second html tag to prevent run code inside the iframe
         let iframe = document.getElementById("content_ifr");
 
@@ -62,7 +62,7 @@
             let body = document.querySelector("body");
 
             if (body) {
-                body.innerHTML = "<p>`Auto Title #${1}`</p>";
+                body.innerHTML = "<p>" + paragraphText + "</p>";
                 console.log("Paragraph added");
             }
         }
@@ -106,10 +106,12 @@
             storeLocalStorage(LS_COUNT, currentPost);
 
             await delay(1000);
-            addTitle();
+            let title = "Auto Title " + currentPost;
+            addTitle(title);
 
             await delay(1000);
-            addParagraph();
+            let paragraph = "Auto Paragraph " + currentPost;
+            addParagraph(paragraph);
 
             if (currentPost < totalPosts) {
                 // Open for the next post
