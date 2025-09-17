@@ -1,5 +1,5 @@
 // ==UserScript==
-// @name         Classic title and paragraf v2
+// @name         Classic title and paragraph v2
 // @namespace    http://tampermonkey.net/
 // @version      2025-09-16
 // @description  try to take over the world!
@@ -22,7 +22,9 @@
         return parseInt(localStorage.getItem(key), 10);
     }
 
-     const delay = ms => new Promise(res => setTimeout(res, ms));
+    function delay(ms) {
+        return new Promise(res => setTimeout(res, ms));
+    }
 
     function addTitle() {
         let title = document.getElementById("title");
@@ -126,6 +128,6 @@
         }
     }
 
-    await delay(5000);
+    await delay(2000);
     run();
 })();
