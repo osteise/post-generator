@@ -13,35 +13,79 @@
 
 (function() {
 
-    const test_int = getRandomInt(10, 20);
-    localStorage.setItem("test_number", test_int.toString());
-
-    const content = generateContent();
+    const seed = localStorage.getItem("LS_COUNTER");
+    const content = generateContent(seed);
+    const title = generateTitle(seed);
+    // spara i localstorage
     localStorage.setItem("ls_content", content);
+    localStorage.setItem("ls_title", title);
 
+        function generateContent(seed)
+        {
+            if (seed==undefined) seed=1;
+            Math.setSeed(seed);
 
-    function generateContent()
-    {
-        var sentences="";
+            var number_of_paragraphs = getRandomInt(1, 6);  // 1..5
+            var number_of_sentences  = getRandomInt(1, 11); // 1..10
 
-        // Generate 5 Sentences with medium probability of each word class and linear probability for all
-        for(var i=0;i<5;i++){
-            sentences+=generate_sentence(0.5,0.5,0.5,0.5,0,0,0,0,0,0,0);
+            var sentences="";
+            // antal stycken
+            for(var j=0;j<number_of_paragraphs;j++) {
+                // antal meningar per stycke
+                for(var i=0;i<number_of_sentences;i++){
+                    sentences+=generate_sentence(
+                        Math.random(), // prob noun
+                        Math.random(), // prob verb
+                        Math.random(), // prob dual adj
+                        Math.random(), // prob adj
+                        Math.random(), // dist noun
+                        Math.random(), // dist verb
+                        Math.random(), // dist adjective
+                        Math.random(), // dist adverb
+                        Math.random(), // dist determiner
+                        Math.random(), // dist conjunction
+                        Math.random()  // dist modals
+                    ); 
+                }
+                // om det inte är sista stycket, lägg till två radbrytningar
+                if (j<number_of_paragraphs-1)
+                {
+                    // Two line feeds
+                    sentences+="\n";
+                    sentences+="\n";
+                }
+            }
+            return(sentences);
         }
 
-        // Two line feeds
-        sentences+="\n";
-        sentences+="\n";
+        function generateTitle()
+        {
+            var raw=generate_sentence(
+                Math.random(), // prob noun
+                Math.random(), // prob verb
+                Math.random(), // prob dual adj
+                Math.random(), // prob adj
+                Math.random(), // dist noun
+                Math.random(), // dist verb
+                Math.random(), // dist adjective
+                Math.random(), // dist adverb
+                Math.random(), // dist determiner
+                Math.random(), // dist conjunction
+                Math.random()  // dist modals
+            ); 
 
-        // Generate a random number of up to 5 sentences with
-        //   Higher probability of more nowns and verbs Sentences should be longer since repeated nouns and verbs are common.
-        //   Normal distribution for nouns and verbs linear for all others. Nouns and Verbs early in list should appear much more commonly.
-        for(var i=0;i<Math.round(Math.random()*5.0);i++){
-            sentences+=generate_sentence(0.9,0.9,0.5,0.5,1,1,0,0,0,0,0);
+            raw = raw.replace(/\.$/, "");
+
+            // splitta i ord
+            var words = raw.split(" ");
+
+            // välj slumpmässigt antal ord mellan 1 och 10
+            var wordCount = getRandomInt(1, Math.min(10, words.length) + 1);
+
+            // sätt ihop dessa ord
+            var title = words.slice(0, wordCount).join(" ");
+
+            return(title);
         }
-
-        return sentences;
-    }
-
 
 })();
