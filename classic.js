@@ -96,15 +96,13 @@
         currentPost++;
         storeLocalStorage(LS_COUNT, currentPost);
 
-        await delay(1000);
         let title = "Auto Title " + currentPost;
         addTitle(title);
 
-        await delay(1000);
         let paragraph = "Auto Paragraph " + currentPost;
         addParagraph(paragraph);
 
-        await delay(2000);
+        await delay(1000);
         publishPost();
     }
 
@@ -130,7 +128,7 @@
             console.log(`Progress: ${currentPost}/${totalPosts}`);
 
             if (currentPost < totalPosts) {
-                // Open a new post tab and close an old post tab
+                // Open a new post tab and close a old post tab
                 window.open('http://cms.webug.se/grupp11/wordpress/wp-admin/post-new.php');
                 window.close();
             } else {
@@ -142,6 +140,6 @@
         }
     }
 
-    await delay(2000);
+    await delay(1000);
     run();
 })();
