@@ -5,6 +5,7 @@
 // @description  try to take over the world!
 // @author       You
 // @match        http://cms.webug.se/grupp11/wordpress/wp-admin/post-new.php
+// @match        http://cms.webug.se/grupp11/wordpress/wp-admin/post.php*
 // @icon         https://www.google.com/s2/favicons?sz=64&domain=webug.se
 // @grant        none
 // ==/UserScript==
@@ -17,11 +18,6 @@
     // --- LocalStorage-keys ---
     const LS_TARGET = '__bulk_target__';
     const LS_COUNT = '__bulk_count__';
-
-    // Prevent double run script inside iframes
-    if (window.top !== window.self){
-        return;
-    }
 
     function storeLocalStorage(key, value) {
         localStorage.setItem(key, String(value));
@@ -96,41 +92,54 @@
 
     async function createPost() {
         let currentPost = getLocalStorage(LS_COUNT);
-        const totalPosts = getLocalStorage(LS_TARGET);
 
-        console.log(`Progress: ${currentPost}/${totalPosts}`);
+        currentPost++;
+        storeLocalStorage(LS_COUNT, currentPost);
 
-        if (currentPost < totalPosts) {
+        await delay(1000);
+        let title = "Auto Title " + currentPost;
+        addTitle(title);
 
-            currentPost++;
-            storeLocalStorage(LS_COUNT, currentPost);
+        await delay(1000);
+        let paragraph = "Auto Paragraph " + currentPost;
+        addParagraph(paragraph);
 
-            await delay(1000);
-            let title = "Auto Title " + currentPost;
-            addTitle(title);
-
-            await delay(1000);
-            let paragraph = "Auto Paragraph " + currentPost;
-            addParagraph(paragraph);
-
-            if (currentPost < totalPosts) {
-                // Open for the next post
-                await delay(1000);
-                window.open('http://cms.webug.se/grupp11/wordpress/wp-admin/post-new.php');
-            } else {
-                console.log("All posts done!");
-                localStorage.removeItem(LS_TARGET);
-                localStorage.removeItem(LS_COUNT);
-            }
-
-            await delay(2000);
-            publishPost();
-        }
+        await delay(2000);
+        publishPost();
     }
 
     async function run() {
-        showPrompt();
-        createPost();
+        // Prevent double run script inside iframes
+        if (window.top !== window.self){
+            return;
+        }
+
+        const url = window.location.href;
+
+        // If a url is not a edit page then show prompt and create a post; otherwise close edit page tab
+        if (!url.includes("post.php") && !url.includes("action=edit")) {
+            console.log("On custom page");
+            showPrompt();
+            createPost();
+        } else {
+            console.log("On edit page");
+
+            let currentPost = getLocalStorage(LS_COUNT);
+            const totalPosts = getLocalStorage(LS_TARGET);
+
+            console.log(`Progress: ${currentPost}/${totalPosts}`);
+
+            if (currentPost < totalPosts) {
+                // Open a new post tab and close an old post tab
+                window.open('http://cms.webug.se/grupp11/wordpress/wp-admin/post-new.php');
+                window.close();
+            } else {
+                console.log("All posts done!");
+                alert("All posts done!");
+                localStorage.removeItem(LS_TARGET);
+                localStorage.removeItem(LS_COUNT);
+            }
+        }
     }
 
     await delay(2000);
