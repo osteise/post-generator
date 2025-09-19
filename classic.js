@@ -20,6 +20,7 @@
     // --- LocalStorage-keys ---
     const LS_TARGET = '__bulk_target__';
     const LS_COUNT = '__bulk_count__';
+    const POST_SEED_INFO = 'postSeedInfo';
 
     function storeLocalStorage(key, value, type) {
         if (type == "int") {
@@ -150,6 +151,38 @@
         return title;
     }
 
+    function storePostSeedInfo(title, randomSeed) {
+        let newPost = `Title: \"${title}\" and seed is: ${randomSeed}`;
+
+        let posts = [];
+
+        const EXISTING_POSTS = getLocalStorage(POST_SEED_INFO, "json");
+        // Get existing posts or empty array
+        if (EXISTING_POSTS != null) {
+            posts = EXISTING_POSTS;
+        }
+
+        // Add the new post
+        posts.push(newPost);
+
+        // Save back to localStorage
+        storeLocalStorage(POST_SEED_INFO, posts, "json");
+    }
+
+    function getPostSeedInfo() {
+        let posts = [];
+
+        const EXISTING_POSTS = getLocalStorage(POST_SEED_INFO, "json");
+
+        // Get existing posts or empty array
+        if (EXISTING_POSTS != null) {
+            posts = EXISTING_POSTS;
+        } else {
+            posts.push("empty");
+        }
+
+        return posts;
+    }
 
     async function createPost() {
         const MAX_RANDOM = 100;
@@ -168,6 +201,8 @@
 
         await delay(1000);
         publishPost();
+
+        storePostSeedInfo(title, RANDOM_SEED);      
     }
 
     async function run() {
@@ -198,8 +233,14 @@
             } else {
                 console.log("All posts done!");
                 alert("All posts done!");
+
+                // ### Show post seed info ###
+                let posts = getPostSeedInfo();
+                console.log(posts);
+
                 localStorage.removeItem(LS_TARGET);
                 localStorage.removeItem(LS_COUNT);
+                localStorage.removeItem(POST_SEED_INFO);
             }
         }
     }
