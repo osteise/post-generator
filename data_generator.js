@@ -7,22 +7,24 @@
 // @match        *://cms.webug.se/grupp11/wordpress/wp-admin/post-new.php*
 // @icon         https://www.google.com/s2/favicons?sz=64&domain=webug.se
 // @require      https://raw.githubusercontent.com/LenaSYS/ContextFreeLib/refs/heads/master/js/contextfreegrammar.js
+// @require      https://raw.githubusercontent.com/LenaSYS/Random-Number-Generator/refs/heads/master/seededrandom.js
 // @grant        none
 // @run-at document-start
 // ==/UserScript==
 
 (function() {
 
-    const seed = localStorage.getItem("LS_COUNTER");
-    const content = generateContent(seed);
-    const title = generateTitle(seed);
+    let seed = localStorage.getItem('__bulk_count__');
+    const content = generateContent();
+    const title = generateTitle();
     // spara i localstorage
     localStorage.setItem("ls_content", content);
     localStorage.setItem("ls_title", title);
 
-        function generateContent(seed)
+        function generateContent()
         {
-            if (seed==undefined) seed=1;
+            if (seed==undefined || isNaN(seed)) seed=1;
+            console.log("Seed: "+seed);
             Math.setSeed(seed);
 
             var number_of_paragraphs = getRandomInt(1, 6);  // 1..5
