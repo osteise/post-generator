@@ -6,6 +6,8 @@
 // @author       You
 // @match        http://cms.webug.se/grupp11/wordpress/wp-admin/post-new.php
 // @match        http://cms.webug.se/grupp11/wordpress/wp-admin/post.php*
+// @require      https://raw.githubusercontent.com/LenaSYS/ContextFreeLib/refs/heads/master/js/contextfreegrammar.js
+// @require      https://raw.githubusercontent.com/LenaSYS/Random-Number-Generator/refs/heads/master/seededrandom.js
 // @icon         https://www.google.com/s2/favicons?sz=64&domain=webug.se
 // @grant        none
 // ==/UserScript==
@@ -106,13 +108,59 @@
         }
     }
 
+    function generateTitle(seed) {
+        if (seed == undefined)
+        {
+            seed = 1;
+        }
+
+        Math.setSeed(seed);
+
+        let sentences="";
+
+        sentences += generate_sentence(
+            Math.random(), // prob noun
+            Math.random(), // prob verb
+            Math.random(), // prob dual adj
+            Math.random(), // prob adj
+            Math.random(), // dist noun
+            Math.random(), // dist verb
+            Math.random(), // dist adjective
+            Math.random(), // dist adverb
+            Math.random(), // dist determiner
+            Math.random(), // dist conjunction
+            Math.random()  // dist modals
+        );
+
+        // Removes a trailing dots from the title
+        sentences = sentences.replace(/\.$/, "");
+
+        // splits the sentences into an array of words,
+        let words = sentences.split(" ");
+
+        const MAX_WORDS = 10;
+        const maxPossible = Math.min(MAX_WORDS, words.length);
+
+        // choose a random total word count between 1 and maxPossible
+        let wordCount = getRandomInt(1, maxPossible + 1);
+
+        // combine the first "wordCount" words into a single string
+        let title = words.slice(0, wordCount).join(" ");
+
+        return title;
+    }
+
+
     async function createPost() {
+        const MAX_RANDOM = 100;
+        const RANDOM_SEED = Math.floor(Math.random() * (MAX_RANDOM + 1));
+        
         let currentPost = getLocalStorage(LS_COUNT, "int");
 
         currentPost++;
         storeLocalStorage(LS_COUNT, currentPost, "int");
-
-        let title = "Auto Title " + currentPost;
+        
+        let title = generateTitle(RANDOM_SEED);
         addTitle(title);
 
         let paragraph = "Auto Paragraph " + currentPost;
