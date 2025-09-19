@@ -35,7 +35,7 @@
   // Temporary word generator – needs to be replaced
   function makePost(i) {
       return {
-      title:   `Auto Title #${i + 1} Random Number = ${localStorage.getItem("test_number")}`,
+      title:   `${localStorage.getItem("ls_title")}`,
       content: `<p>${localStorage.getItem("ls_content")}</p>`
     };
   }
