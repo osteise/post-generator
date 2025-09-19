@@ -19,13 +19,29 @@
     const LS_TARGET = '__bulk_target__';
     const LS_COUNT = '__bulk_count__';
 
-    function storeLocalStorage(key, value) {
-        localStorage.setItem(key, String(value));
+    function storeLocalStorage(key, value, type) {
+        if (type == "int") {
+            localStorage.setItem(key, String(value));
+            return true;
+        } else if (type == "json") {
+            localStorage.setItem(key, JSON.stringify(value));
+            return true;
+        } else {
+            alert(`Unsupported type: ${type}`);
+            return false;
+        }
     }
 
-    function getLocalStorage(key) {
-        // 10 is to tell the browser its an integer
-        return parseInt(localStorage.getItem(key), 10);
+    function getLocalStorage(key, type) {
+        if (type == "int") {
+            // 10 is to tell the browser its an integer
+            return parseInt(localStorage.getItem(key), 10);
+        } else if (type == "json") {
+            return JSON.parse(localStorage.getItem(key));
+        } else {
+            alert(`Unsupported type: ${type}`);
+            return null;
+        }
     }
 
     function delay(ms) {
@@ -77,24 +93,24 @@
 
      function showPrompt() {
         // Ask how many posts to create, if its missing
-        if (!getLocalStorage(LS_TARGET)) {
-            console.log(getLocalStorage(LS_TARGET));
+        if (!getLocalStorage(LS_TARGET, "int")) {
+
             // default value = 5, 10 is to tell the browser its an integer
             const n = parseInt(prompt('How many posts do you want to create?', '5'), 10);
             if (!Number.isFinite(n) || n <= 0) {
                 return;
             }
 
-            storeLocalStorage(LS_COUNT, 0);
-            storeLocalStorage(LS_TARGET, n);
+            storeLocalStorage(LS_COUNT, 0, "int");
+            storeLocalStorage(LS_TARGET, n, "int");
         }
     }
 
     async function createPost() {
-        let currentPost = getLocalStorage(LS_COUNT);
+        let currentPost = getLocalStorage(LS_COUNT, "int");
 
         currentPost++;
-        storeLocalStorage(LS_COUNT, currentPost);
+        storeLocalStorage(LS_COUNT, currentPost, "int");
 
         let title = "Auto Title " + currentPost;
         addTitle(title);
@@ -122,8 +138,8 @@
         } else {
             console.log("On edit page");
 
-            let currentPost = getLocalStorage(LS_COUNT);
-            const totalPosts = getLocalStorage(LS_TARGET);
+            let currentPost = getLocalStorage(LS_COUNT, "int");
+            const totalPosts = getLocalStorage(LS_TARGET, "int");
 
             console.log(`Progress: ${currentPost}/${totalPosts}`);
 
