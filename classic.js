@@ -77,7 +77,7 @@
             let body = document.querySelector("body");
 
             if (body) {
-                body.innerHTML = "<p>" + paragraphText + "</p>";
+                body.innerHTML = paragraphText;
                 console.log("Paragraph added");
             }
         }
@@ -153,6 +153,47 @@
         return title;
     }
 
+    function generateContent(seed)
+    {
+        if (seed == undefined || isNaN(seed)) {
+            seed = 1; 
+        }
+
+        Math.setSeed(seed);
+
+        let numberOfParagraphs = getRandomInt(1, 6);  // 1..5
+        
+        let paragraphs = "";
+
+        // total number of paragraphs
+        for(let i = 0; i < numberOfParagraphs; i++) {
+            let numberOfSentences  = getRandomInt(1, 11); // 1..10
+            let paragraph = "";
+
+            // total sentences per paragraph
+            for(let j = 0; j < numberOfSentences; j++){
+                paragraph += generate_sentence(
+                    Math.random(), // prob noun
+                    Math.random(), // prob verb
+                    Math.random(), // prob dual adj
+                    Math.random(), // prob adj
+                    Math.random(), // dist noun
+                    Math.random(), // dist verb
+                    Math.random(), // dist adjective
+                    Math.random(), // dist adverb
+                    Math.random(), // dist determiner
+                    Math.random(), // dist conjunction
+                    Math.random()  // dist modals
+                ); 
+            }
+
+            // wrap each paragraph in <p> tags
+            paragraphs += `<p>${paragraph}</p>\n`;
+        }
+
+        return paragraphs;
+    }
+
     function storePostSeedInfo(title, randomSeed) {
         let newPost = `Title: \"${title}\" and seed is: ${randomSeed}`;
 
@@ -198,7 +239,7 @@
         let title = generateTitle(RANDOM_SEED);
         addTitle(title);
 
-        let paragraph = "Auto Paragraph " + currentPost;
+        let paragraph = generateContent(RANDOM_SEED);
         addParagraph(paragraph);
 
         await delay(1000);
