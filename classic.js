@@ -110,7 +110,7 @@
     }
 
     function generateTitle(seed) {
-        if (seed == undefined)
+        if (seed == undefined || isNaN(seed))
         {
             seed = 1;
         }
@@ -147,6 +147,8 @@
 
         // combine the first "wordCount" words into a single string
         let title = words.slice(0, wordCount).join(" ");
+
+        storePostSeedInfo(title, seed);   
 
         return title;
     }
@@ -200,9 +202,7 @@
         addParagraph(paragraph);
 
         await delay(1000);
-        publishPost();
-
-        storePostSeedInfo(title, RANDOM_SEED);      
+        publishPost();   
     }
 
     async function run() {
@@ -234,7 +234,7 @@
                 console.log("All posts done!");
                 alert("All posts done!");
 
-                // ### Show post seed info ###
+                // Show post seed info
                 let posts = getPostSeedInfo();
                 console.log(posts);
 
