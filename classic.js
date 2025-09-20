@@ -94,7 +94,7 @@
         console.log("Post published");
     }
 
-     function showPrompt() {
+    function showPrompt() {
         // Ask how many posts to create, if its missing
         if (!getLocalStorage(LS_TARGET, "int")) {
 
@@ -162,7 +162,7 @@
         Math.setSeed(seed);
 
         let numberOfParagraphs = getRandomInt(1, 6);  // 1..5
-        
+
         let paragraphs = "";
 
         // total number of paragraphs
@@ -230,12 +230,12 @@
     async function createPost() {
         const MAX_RANDOM = 100;
         const RANDOM_SEED = Math.floor(Math.random() * (MAX_RANDOM + 1));
-        
+
         let currentPost = getLocalStorage(LS_COUNT, "int");
 
         currentPost++;
         storeLocalStorage(LS_COUNT, currentPost, "int");
-        
+
         let title = generateTitle(RANDOM_SEED);
         addTitle(title);
 
