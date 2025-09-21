@@ -17,7 +17,6 @@
     localStorage.removeItem('ls_title');
 
     let seed = localStorage.getItem('__bulk_count__');
-    if(isNaN(seed)) seed = 1 ;
     console.log("Seed: "+seed);
 
     function jsf32(a, b, c, d) {
@@ -38,15 +37,11 @@
     }
 
     Math.setSeed = function(seed){
-        Math.randSeed=seed;
+        Math.randSeed = Number(seed) >>> 0;
         for(var i=0;i<7;i++) Math.random();
     }
 
-    var origRandom = Math.random;
-    Math.randSeed = Math.floor(Date.now());
-
-
-
+    Math.setSeed(seed);
 
     let content = generateContent();
     let title = generateTitle();
@@ -56,6 +51,7 @@
 
         function generateContent()
         {
+
             var number_of_paragraphs = getRandomInt(1, 6);  // 1..5
 
             var sentences="";
