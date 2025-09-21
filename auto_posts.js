@@ -2,7 +2,7 @@
 // @name         Auto posts
 // @version      1.1
 // @match        *://cms.webug.se/grupp11/wordpress/wp-admin/post-new.php*
-// @description   Try to take over the world!
+// @description  Auto create posts
 // @run-at       document-idle
 // @icon         https://www.google.com/s2/favicons?sz=64&domain=webug.se
 // @grant        none
@@ -39,10 +39,6 @@
       content: `<p>${localStorage.getItem("ls_content")}</p>`
     };
   }
-
-    // To reset counter in localstorage
-    // localStorage.removeItem('__bulk_target__');
-    // localStorage.removeItem('__bulk_count__');
 
   // --- Inject code into the page context so that wp.data exists ---
   const code = `

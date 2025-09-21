@@ -2,7 +2,7 @@
 // @name         Data generator
 // @namespace    http://tampermonkey.net/
 // @version      2025-09-16
-// @description  try to take over the world!
+// @description  Data generator for posts
 // @author       You
 // @match        *://cms.webug.se/grupp11/wordpress/wp-admin/post-new.php*
 // @icon         https://www.google.com/s2/favicons?sz=64&domain=webug.se
@@ -19,7 +19,6 @@
     let seed = localStorage.getItem('__bulk_count__');
     if(isNaN(seed)) seed = 1 ;
     console.log("Seed: "+seed);
-    //Math.setSeed(seed);
 
     function jsf32(a, b, c, d) {
         a |= 0; b |= 0; c |= 0; d |= 0;
@@ -92,7 +91,6 @@
 
         function generateTitle()
         {
-            //Math.setSeed();
 
             var raw=generate_sentence(
                 Math.random(), // prob noun
