@@ -108,7 +108,7 @@
             var words = raw.split(" ");
 
             // välj slumpmässigt antal ord mellan 1 och 10
-            var wordCount = getRandomInt(1, Math.min(10, words.length) + 1);
+            var wordCount = getRandomInt(3, Math.min(7, words.length) + 1);
 
             // sätt ihop dessa ord
             var title = words.slice(0, wordCount).join(" ");
