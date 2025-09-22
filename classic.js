@@ -148,7 +148,7 @@
         // combine the first "wordCount" words into a single string
         let title = words.slice(0, wordCount).join(" ");
 
-        storePostSeedInfo(title, seed);   
+        storePostSeedInfo(title, seed);
 
         return title;
     }
@@ -156,12 +156,12 @@
     function generateContent(seed)
     {
         if (seed == undefined || isNaN(seed)) {
-            seed = 1; 
+            seed = 1;
         }
 
         Math.setSeed(seed);
 
-        let numberOfParagraphs = getRandomInt(1, 6);  // 1..5
+        let numberOfParagraphs = getRandomInt(1, 6); // 1..5
 
         let paragraphs = "";
 
@@ -184,7 +184,7 @@
                     Math.random(), // dist determiner
                     Math.random(), // dist conjunction
                     Math.random()  // dist modals
-                ); 
+                );
             }
 
             // wrap each paragraph in <p> tags
@@ -195,12 +195,12 @@
     }
 
     function storePostSeedInfo(title, randomSeed) {
-        let newPost = `Title: \"${title}\" and seed is: ${randomSeed}`;
+        let newPost = {'title': title,'seed': randomSeed};
 
         let posts = [];
 
         const EXISTING_POSTS = getLocalStorage(POST_SEED_INFO, "json");
-        // Get existing posts or empty array
+        // Get existing posts
         if (EXISTING_POSTS != null) {
             posts = EXISTING_POSTS;
         }
@@ -243,7 +243,25 @@
         addParagraph(paragraph);
 
         await delay(1000);
-        publishPost();   
+        publishPost();
+    }
+
+    function saveFilePrompt(posts) {
+        const response = confirm('Save?', '5');
+        
+        let str = " Title: , Seed: \n";
+        if (response) {
+            // Take each post
+            for (let i = 0; i < posts.length; i++) {
+                let post = posts[i];
+
+                str += post.title + "," + post.seed + "\n";
+            }
+
+            let dataBlob = new Blob([str],{type:"text/csv"});
+            let objUrl = URL.createObjectURL(dataBlob);
+            window.open(objUrl);
+        }
     }
 
     async function run() {
@@ -278,6 +296,9 @@
                 // Show post seed info
                 let posts = getPostSeedInfo();
                 console.log(posts);
+                
+                // Save a excel file
+                saveFilePrompt(posts);
 
                 localStorage.removeItem(LS_TARGET);
                 localStorage.removeItem(LS_COUNT);
