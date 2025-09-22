@@ -247,7 +247,7 @@
     }
 
     function saveFilePrompt(posts) {
-        const response = confirm('Save?', '5');
+        const response = confirm('Do you want save posts information in a excel file?', '5');
         
         let str = " Title: , Seed: \n";
         if (response) {
