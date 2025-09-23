@@ -135,5 +135,8 @@
     }
 
     // Start the program
-    run();
+    window.addEventListener('load', function () {
+        console.log("It's loaded!");
+        run();
+    })
 })();
