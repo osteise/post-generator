@@ -14,9 +14,8 @@
 (function() {
     'use strict';
 
-      // Ask how many posts to create, if its missing
+      // Ask how many searches to run, if its missing
     if (!localStorage.getItem('SEARCH_TARGET')) {
-        // default value = 5, 10 is to tell the browser its an integer
         const n = parseInt(prompt('How many searches do you want to make?', '5'), 10);
         if (!Number.isFinite(n) || n <= 0) return;
         localStorage.setItem('SEARCH_TARGET', String(n));
@@ -26,16 +25,12 @@
     const search_target = parseInt(localStorage.getItem('SEARCH_TARGET') ?? '0', 10);
     let search_counter = parseInt(localStorage.getItem('SEARCH_COUNTER') ?? '0', 10);
 
-    // Your code here...
-    const WORD_SEED_INFO = 'wordSeedInfo';
-    const OLD_VALUE = "oldValue";
-    //const verb = new Array("warn","encourage","arrange","obtain","skip","spot","treat","spray");
+    // [{word, timeMs, seed}]
+    const SEARCH_RESULTS = 'searchResults'; 
 
-    const SEARCH_RESULTS = 'searchResults'; // [{word, timeMs}]
-
-    function storeSearchResult(word, timeMs) {
+    function storeSearchResult(word, timeMs, seed) {
         const arr = getLocalStorage(SEARCH_RESULTS, "json") || [];
-        arr.push({ word, timeMs: Number(timeMs) });
+        arr.push({ word, timeMs: Number(timeMs), seed: Number(seed) });
         storeLocalStorage(SEARCH_RESULTS, arr, "json");
     }
 
@@ -68,39 +63,6 @@
         }
     }
 
-    function storeWordSeedInfo(word, randomSeed) {
-        let newWord = {'word': word,'seed': randomSeed};
-
-        let words = [];
-
-        const EXISTING_WORDS = getLocalStorage(WORD_SEED_INFO, "json");
-        // Get existing words
-        if (EXISTING_WORDS != null) {
-            words = EXISTING_WORDS;
-        }
-
-        // Add the new word
-        words.push(newWord);
-
-        // Save back to localStorage
-        storeLocalStorage(WORD_SEED_INFO, words, "json");
-    }
-
-    function getWordSeedInfo() {
-        let words = [];
-
-        const EXISTING_WORDS = getLocalStorage(WORD_SEED_INFO, "json");
-
-        // Get existing words or empty array
-        if (EXISTING_WORDS != null) {
-            words = EXISTING_WORDS;
-        } else {
-            words.push("empty");
-        }
-
-        return words;
-    }
-
     function saveFilePrompt() {
         const rows = getSearchResults();
         if (!rows.length) {
@@ -109,8 +71,8 @@
             if (!confirm('Do you want to save search info as CSV?')) {
                 return;
             } else {
-                let csv = "Word,TimeMs\n";
-                for (const row of rows) csv += `${row.word},${row.timeMs}\n`;
+                let csv = "Word,TimeMs, Seed\n";
+                for (const row of rows) csv += `${row.word},${row.timeMs}, ${row.seed}\n`;
 
                 const dataBlob = new Blob([csv], { type: "text/csv" });
                 const objUrl = URL.createObjectURL(dataBlob);
@@ -147,16 +109,17 @@
         let start = performance.timeOrigin + performance.now();
 
         const MAX_RANDOM = 100;
-        const RANDOM_SEED = Math.floor(Math.random() * (MAX_RANDOM + 1));
+        const seed = getLocalStorage('SEARCH_COUNTER', 'int');
+        console.log("Seed: " + seed);
 
-        let randomWord = generateRandomWord(RANDOM_SEED);
+        let randomWord = generateRandomWord(seed);
 
         // ------ Stop timer ------
         let end = performance.timeOrigin + performance.now();
         let time = end - start;
 
         // save to local storage
-        storeSearchResult(randomWord, Number(time.toFixed(2)));
+        storeSearchResult(randomWord, Number(time.toFixed(2)), Number(seed));
 
         console.log("time: " + time );
         search_counter++;
@@ -164,6 +127,7 @@
         console.log("Counter: " + search_counter + "/" + search_target);
 
         searchWord(randomWord);
+
     }
 
     // Start the program
