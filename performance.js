@@ -23,14 +23,20 @@
         // Ask how many searches to run, if its missing
         if (!getLocalStorage(SEARCH_TARGET, "int")) {
 
-            // default value = 5, 10 is to tell the browser its an integer
-            const n = parseInt(prompt('How many searches do you want to make?', '5'), 10);
-            if (!Number.isFinite(n) || n <= 0) {
-                return;
-            }
+            let response = prompt('How many searches do you want to make?', '5');
+            if (response) {
+                // default value = 5, 10 is to tell the browser its an integer
+                const n = parseInt(response, 10);
+                if (!Number.isFinite(n) || n <= 0) {
+                    return;
+                }
 
-            storeLocalStorage(SEARCH_TARGET, n, "int");
-            storeLocalStorage(SEARCH_COUNTER, 0, "int");
+                storeLocalStorage(SEARCH_TARGET, n, "int");
+                storeLocalStorage(SEARCH_COUNTER, 0, "int");
+                return true;
+            } else {
+                return false;
+            }
         }
     }
 
@@ -181,9 +187,12 @@
     // Start the program
     const url = window.location.href;
 
-    if (url.endsWith("/")) {
-        showPrompt();
-        run();
+    if (url.endsWith("wordpress/")) {
+        if (showPrompt()) {
+            run();
+        } else {
+            console.log("canceled");
+        }
     } else {
         window.addEventListener('load', function () {
             console.log("It's loaded!");
