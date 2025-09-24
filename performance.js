@@ -156,26 +156,24 @@
     function run() {   
         let start = performance.timeOrigin + performance.now();
 
-        const MAX_RANDOM = 100;
-        const RANDOM_SEED = Math.floor(Math.random() * (MAX_RANDOM + 1));
+        const search_target = getLocalStorage(SEARCH_TARGET, "int");
+        let search_counter = getLocalStorage(SEARCH_COUNTER, 'int');
+        let seed = search_counter;
+        console.log("Seed: " + seed);
 
-        let randomWord = generateRandomWord(RANDOM_SEED);
+        let randomWord = generateRandomWord(seed);
+
+        search_counter++;
+        console.log("Counter: " + search_counter + "/" + search_target);
+        storeLocalStorage(SEARCH_COUNTER, search_counter, "int");
 
         // ------ Stop timer ------
         let end = performance.timeOrigin + performance.now();
         let time = end - start;
-
-        // save to local storage
-        storeSearchResult(randomWord, RANDOM_SEED, Number(time.toFixed(2)));
-
         console.log("time: " + time );
 
-        const search_target = getLocalStorage(SEARCH_TARGET, "int") || 0;
-        let search_counter = getLocalStorage(SEARCH_COUNTER, "int") || 0;
-
-        search_counter++;
-        storeLocalStorage(SEARCH_COUNTER, search_counter, "int");
-        console.log("Counter: " + search_counter + "/" + search_target);
+        // save to local storage
+        storeSearchResult(randomWord, seed, Number(time.toFixed(2)));
 
         searchWord(randomWord);
     }
