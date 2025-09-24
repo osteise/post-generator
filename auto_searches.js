@@ -101,26 +101,6 @@
         return words;
     }
 
-    /*
-    function saveFilePrompt(words) {
-        const response = confirm('Do you want save words information in a excel file?', '5');
-
-        let str = " Word: , Seed: \n";
-        if (response) {
-            // Take each word
-            for (let i = 0; i < words.length; i++) {
-                let word = words[i];
-
-                str += word.word + "," + word.seed + "\n";
-            }
-
-            let dataBlob = new Blob([str],{type:"text/csv"});
-            let objUrl = URL.createObjectURL(dataBlob);
-            window.open(objUrl);
-        }
-    }
-    */
-
     function saveFilePrompt() {
         const rows = getSearchResults();
         if (!rows.length) {
