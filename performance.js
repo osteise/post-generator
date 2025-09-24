@@ -179,16 +179,18 @@
     }
 
     // Start the program
-    window.addEventListener('load', function () {
-        console.log("It's loaded!");
+    const url = window.location.href;
 
-        const search_target = getLocalStorage(SEARCH_TARGET, "int");
-        let search_counter = getLocalStorage(SEARCH_COUNTER, "int");
+    if (url.endsWith("/")) {
+        showPrompt();
+        run();
+    } else {
+        window.addEventListener('load', function () {
+            console.log("It's loaded!");
 
-        if (isNaN(search_target) && isNaN(search_counter)) {
-            showPrompt();
-            run();
-        } else {
+            const search_target = getLocalStorage(SEARCH_TARGET, "int");
+            let search_counter = getLocalStorage(SEARCH_COUNTER, "int");
+
             if (Number(search_counter) < Number(search_target)) {
                 run();
             } else {
@@ -197,6 +199,6 @@
                 localStorage.removeItem(SEARCH_COUNTER);
                 localStorage.removeItem(SEARCH_RESULTS);
             }
-        }
-    })
+        })
+    }
 })();
