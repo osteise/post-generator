@@ -20,7 +20,7 @@
     const SEARCH_RESULTS = 'searchResults'; // [{word, seed, timeMs}
 
     function showPrompt() {
-        // Ask how many posts to create, if its missing
+        // Ask how many searches to run, if its missing
         if (!getLocalStorage(SEARCH_TARGET, "int")) {
 
             // default value = 5, 10 is to tell the browser its an integer
@@ -92,23 +92,36 @@
     }
 
     function saveFilePrompt() {
-        const rows = getSearchResults();
+        const wordRows = getSearchResults();
 
-        if (!rows.length) {
+        if (!wordRows.length) {
             return;
         } else {
-            if (!confirm('Do you want to save search info as CSV?')) {
-                return;
-            } else {
+            if (confirm('Do you want to save search info as CSV?')) {
                 let csv = "Word, seed, TimeMs \n";
 
-                for (const row of rows) {
-                    csv += `${row.word}, ${row.seed}, ${row.timeMs}\n`
+                for (const wordRow of wordRows) {
+                    csv += `${wordRow.word}, ${wordRow.seed}, ${wordRow.timeMs}\n`
                 };
-
+                
+                // create a blob
                 const dataBlob = new Blob([csv], { type: "text/csv" });
                 const objUrl = URL.createObjectURL(dataBlob);
-                window.open(objUrl);
+
+                // create a link
+                const link = document.createElement("a");
+                link.href = objUrl;
+                link.download = "data.csv";
+                document.body.appendChild(link);
+
+                // call download
+                link.click();
+
+                // remove link
+                document.body.removeChild(link);
+
+                // release a object to free up memory 
+                URL.revokeObjectURL(objUrl);
             }
         }
     }
@@ -132,11 +145,15 @@
 
             if (searchButton) {
                 searchButton.click();
+            } else {
+                console.log("No search button was found");
             }
+        } else {
+            console.log("No search input was found");
         }
     }
 
-    function run() {
+    function run() {   
         let start = performance.timeOrigin + performance.now();
 
         const MAX_RANDOM = 100;
