@@ -14,6 +14,11 @@
 (function() {
     'use strict';
 
+    // Keys for measuring between navigations
+    const P_START = 'PENDING_START_MS';
+    const P_WORD  = 'PENDING_WORD';
+    const P_SEED  = 'PENDING_SEED';
+
       // Ask how many searches to run, if its missing
     if (!localStorage.getItem('SEARCH_TARGET')) {
         const n = parseInt(prompt('How many searches do you want to make?', '5'), 10);
@@ -25,12 +30,27 @@
     const search_target = parseInt(localStorage.getItem('SEARCH_TARGET') ?? '0', 10);
     let search_counter = parseInt(localStorage.getItem('SEARCH_COUNTER') ?? '0', 10);
 
-    // [{word, timeMs, seed}]
-    const SEARCH_RESULTS = 'searchResults'; 
+    // [{word, timeMs, seed, start, end}]
+    const SEARCH_RESULTS = 'searchResults';
 
-    function storeSearchResult(word, timeMs, seed) {
+    function fmt(ts) {
+        // ts = unix ms (number)
+        const d = new Date(ts);
+        const pad = (n, w=2) => String(n).padStart(w,'0');
+        return `${d.getFullYear()}-${pad(d.getMonth()+1)}-${pad(d.getDate())} ` +
+            `${pad(d.getHours())}:${pad(d.getMinutes())}:${pad(d.getSeconds())}.` +
+            `${pad(d.getMilliseconds(),3)}`;
+    }
+
+    function storeSearchResult(word, timeMs, seed, startTime, endTime) {
         const arr = getLocalStorage(SEARCH_RESULTS, "json") || [];
-        arr.push({ word, timeMs: Number(timeMs), seed: Number(seed) });
+        arr.push({
+            word,
+            timeMs: Number(timeMs),
+            seed: Number(seed),
+            start: fmt(startTime),
+            end:   fmt(endTime)
+        });
         storeLocalStorage(SEARCH_RESULTS, arr, "json");
     }
 
@@ -71,9 +91,10 @@
             if (!confirm('Do you want to save search info as CSV?')) {
                 return;
             } else {
-                let csv = "Word,TimeMs, Seed\n";
-                for (const row of rows) csv += `${row.word},${row.timeMs}, ${row.seed}\n`;
-
+                let csv = "Word,TimeMs, Seed, Start, End\n";
+                for (const row of rows) {
+                    csv += `${row.word},${row.timeMs},${row.seed},${row.start},${row.end}\n`;
+                }
                 const dataBlob = new Blob([csv], { type: "text/csv" });
                 const objUrl = URL.createObjectURL(dataBlob);
                 window.open(objUrl);
@@ -104,39 +125,69 @@
         }
     }
 
+    function resultPage() {
+
+        const startMs = Number(sessionStorage.getItem(P_START));
+        const word = sessionStorage.getItem(P_WORD);
+        const seed = Number(sessionStorage.getItem(P_SEED));
+
+        if (Number.isFinite(startMs) && word != null && Number.isFinite(seed)) {
+            const endMs = Date.now();
+            const time = endMs - startMs;
+
+            storeSearchResult(word, Number(time.toFixed(3)), seed, startMs, endMs);
+
+            // clear search and reset counter
+            sessionStorage.removeItem(P_START);
+            sessionStorage.removeItem(P_WORD);
+            sessionStorage.removeItem(P_SEED);
+
+            search_counter++;
+            localStorage.setItem('SEARCH_COUNTER', String(search_counter));
+            console.log(`Stored: "${word}" ${time.toFixed(3)} ms (${search_counter}/${search_target})`);
+        }
+
+        // continue or save
+        if (search_counter < search_target) {
+            // go back to start page
+            location.href = location.origin + '/grupp11/wordpress/';
+        }
+    }
+
+    // start search on startpage, not result page
     async function run() {
-
-        let start = performance.timeOrigin + performance.now();
-
-        const MAX_RANDOM = 100;
         const seed = getLocalStorage('SEARCH_COUNTER', 'int');
-        console.log("Seed: " + seed);
+        const randomWord = generateRandomWord(seed);
 
-        let randomWord = generateRandomWord(seed);
-
-        // ------ Stop timer ------
-        let end = performance.timeOrigin + performance.now();
-        let time = end - start;
-
-        // save to local storage
-        storeSearchResult(randomWord, Number(time.toFixed(2)), Number(seed));
-
-        console.log("time: " + time );
-        search_counter++;
-        localStorage.setItem('SEARCH_COUNTER', search_counter);
-        console.log("Counter: " + search_counter + "/" + search_target);
+        // save start, word and seed before loading new page
+        const start = Date.now();
+        sessionStorage.setItem(P_START, String(start));
+        sessionStorage.setItem(P_WORD, randomWord);
+        sessionStorage.setItem(P_SEED, String(seed));
 
         searchWord(randomWord);
-
     }
 
     // Start the program
     window.addEventListener('load', function () {
         console.log("It's loaded!");
-        if (Number(search_counter) < Number(search_target)) {
-            run();
+        resultPage();
+
+        const params = new URLSearchParams(location.search);
+        // if not the start page
+        if (!params.has('s')) {
+            if (Number(search_counter) < Number(search_target)) {
+                run();
+            } else {
+                saveFilePrompt();
+            }
         } else {
-            saveFilePrompt();
+            if (Number(search_counter) < Number(search_target)) {
+                resultPage();
+            } else {
+                saveFilePrompt();
+            }
         }
+
     })
 })();
