@@ -18,6 +18,10 @@
     const SEARCH_TARGET = "SEARCH_TARGET";
     const SEARCH_COUNTER = "SEARCH_COUNTER";
     const SEARCH_RESULTS = 'searchResults'; // [{word, seed, timeMs}
+    const RANDOM_WORD = "randomWord";
+    const START_TIME = 'startTime';
+    const END_TIME = 'endTime';
+    const RESULT_TIME = 'resultTime';
 
     function showPrompt() {
         // Ask how many searches to run, if its missing
@@ -64,7 +68,12 @@
         }
     }
 
-    function storeSearchResult(word, randomSeed, timeMs) {
+    function storeSearchResult() {
+        let word = getLocalStorage(RANDOM_WORD, "json");
+        let search_counter = getLocalStorage(SEARCH_COUNTER, 'int');
+        let randomSeed = search_counter;
+        let timeMs = getLocalStorage(RESULT_TIME, "int");
+
         let newWord = {'word': word,'seed': randomSeed, 'timeMs': Number(timeMs)};
 
         let words = [];
@@ -138,7 +147,28 @@
         }
 
         Math.setSeed(seed);
-        return randomword(verb, true);
+        let randomWord = randomword(verb, true);
+
+        storeLocalStorage(RANDOM_WORD, randomWord, "json");
+
+        return randomWord;
+    }
+
+    
+    function startTime() {
+        let start = performance.timeOrigin + performance.now();
+        storeLocalStorage(START_TIME, start, "int");
+    }
+
+    function endTime() {
+        // ------ Stop timer ------
+        let end = performance.timeOrigin + performance.now();
+        storeLocalStorage(END_TIME, end, "int");
+        
+        let start = getLocalStorage(START_TIME, "int");
+        
+        let time = end - start;
+        storeLocalStorage(RESULT_TIME, time, "int");
     }
 
     function searchWord(word) {
@@ -151,6 +181,7 @@
 
             if (searchButton) {
                 searchButton.click();
+                startTime();
             } else {
                 console.log("No search button was found");
             }
@@ -159,9 +190,8 @@
         }
     }
 
-    function run() {   
-        let start = performance.timeOrigin + performance.now();
 
+    function run() {   
         const search_target = getLocalStorage(SEARCH_TARGET, "int");
         let search_counter = getLocalStorage(SEARCH_COUNTER, 'int');
         let seed = search_counter;
@@ -172,15 +202,7 @@
         search_counter++;
         console.log("Counter: " + search_counter + "/" + search_target);
         storeLocalStorage(SEARCH_COUNTER, search_counter, "int");
-
-        // ------ Stop timer ------
-        let end = performance.timeOrigin + performance.now();
-        let time = end - start;
-        console.log("time: " + time );
-
-        // save to local storage
-        storeSearchResult(randomWord, seed, Number(time.toFixed(2)));
-
+        
         searchWord(randomWord);
     }
 
@@ -195,6 +217,11 @@
         }
     } else {
         window.addEventListener('load', function () {
+            endTime(); 
+            
+            // save to local storage
+            storeSearchResult();
+
             console.log("It's loaded!");
 
             const search_target = getLocalStorage(SEARCH_TARGET, "int");
