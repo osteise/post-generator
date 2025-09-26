@@ -118,7 +118,7 @@
                 for (const wordRow of wordRows) {
                     csv += `${wordRow.word}, ${wordRow.seed}, ${wordRow.timeMs}\n`
                 };
-                
+
                 // create a blob
                 const dataBlob = new Blob([csv], { type: "text/csv" });
                 const objUrl = URL.createObjectURL(dataBlob);
@@ -135,7 +135,7 @@
                 // remove link
                 document.body.removeChild(link);
 
-                // release a object to free up memory 
+                // release a object to free up memory
                 URL.revokeObjectURL(objUrl);
             }
         }
@@ -154,7 +154,6 @@
         return randomWord;
     }
 
-    
     function startTime() {
         let start = performance.timeOrigin + performance.now();
         storeLocalStorage(START_TIME, start, "int");
@@ -164,9 +163,9 @@
         // ------ Stop timer ------
         let end = performance.timeOrigin + performance.now();
         storeLocalStorage(END_TIME, end, "int");
-        
+
         let start = getLocalStorage(START_TIME, "int");
-        
+
         let time = end - start;
         storeLocalStorage(RESULT_TIME, time, "int");
     }
@@ -190,8 +189,7 @@
         }
     }
 
-
-    function run() {   
+    function run() {
         const search_target = getLocalStorage(SEARCH_TARGET, "int");
         let search_counter = getLocalStorage(SEARCH_COUNTER, 'int');
         
