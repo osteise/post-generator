@@ -18,6 +18,7 @@
     const SEARCH_TARGET = "SEARCH_TARGET";
     const SEARCH_COUNTER = "SEARCH_COUNTER";
     const SEARCH_RESULTS = 'searchResults'; // [{word, seed, timeMs}
+    const RANDOM_SEED = "randomSeed";
     const RANDOM_WORD = "randomWord";
     const START_TIME = 'startTime';
     const END_TIME = 'endTime';
@@ -70,8 +71,7 @@
 
     function storeSearchResult() {
         let word = getLocalStorage(RANDOM_WORD, "json");
-        let search_counter = getLocalStorage(SEARCH_COUNTER, 'int');
-        let randomSeed = search_counter;
+        let randomSeed = getLocalStorage(RANDOM_SEED, 'int');
         let timeMs = getLocalStorage(RESULT_TIME, "int");
 
         let newWord = {'word': word,'seed': randomSeed, 'timeMs': Number(timeMs)};
@@ -194,8 +194,10 @@
     function run() {   
         const search_target = getLocalStorage(SEARCH_TARGET, "int");
         let search_counter = getLocalStorage(SEARCH_COUNTER, 'int');
-        let seed = search_counter;
         
+        let seed = search_counter;
+        storeLocalStorage(RANDOM_SEED, seed, "int");
+
         console.log("Seed: " + seed);
 
         let randomWord = generateRandomWord(seed);
@@ -217,12 +219,10 @@
         }
     } else {
         window.addEventListener('load', function () {
-            endTime(); 
-            
-            // save to local storage
-            storeSearchResult();
-
+            endTime();
             console.log("It's loaded!");
+
+            storeSearchResult();
 
             const search_target = getLocalStorage(SEARCH_TARGET, "int");
             let search_counter = getLocalStorage(SEARCH_COUNTER, "int");
