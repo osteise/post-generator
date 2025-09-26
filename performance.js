@@ -195,15 +195,15 @@
         const search_target = getLocalStorage(SEARCH_TARGET, "int");
         let search_counter = getLocalStorage(SEARCH_COUNTER, 'int');
         let seed = search_counter;
+        
         console.log("Seed: " + seed);
 
         let randomWord = generateRandomWord(seed);
+        searchWord(randomWord);
 
         search_counter++;
-        console.log("Counter: " + search_counter + "/" + search_target);
         storeLocalStorage(SEARCH_COUNTER, search_counter, "int");
-        
-        searchWord(randomWord);
+        console.log("Counter: " + search_counter + "/" + search_target);
     }
 
     // Start the program
@@ -234,6 +234,10 @@
                 localStorage.removeItem(SEARCH_TARGET);
                 localStorage.removeItem(SEARCH_COUNTER);
                 localStorage.removeItem(SEARCH_RESULTS);
+                localStorage.removeItem(RANDOM_WORD);
+                localStorage.removeItem(START_TIME);
+                localStorage.removeItem(END_TIME);
+                localStorage.removeItem(RESULT_TIME);
             }
         })
     }
