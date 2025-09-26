@@ -73,8 +73,10 @@
         let word = getLocalStorage(RANDOM_WORD, "json");
         let randomSeed = getLocalStorage(RANDOM_SEED, 'int');
         let timeMs = getLocalStorage(RESULT_TIME, "int");
+        let start = getLocalStorage(START_TIME, "int");
+        let end = getLocalStorage(END_TIME, "int");
 
-        let newWord = {'word': word,'seed': randomSeed, 'timeMs': Number(timeMs)};
+        let newWord = {'word': word,'seed': randomSeed, 'timeMs': Number(timeMs), 'startTime': Number(start), 'endTime': Number(end)};
 
         let words = [];
 
@@ -113,10 +115,10 @@
             return;
         } else {
             if (confirm('Do you want to save search info as CSV?')) {
-                let csv = "Word, seed, TimeMs \n";
+                let csv = "Word, seed, TimeMs, StartTime, EndTime \n";
 
                 for (const wordRow of wordRows) {
-                    csv += `${wordRow.word}, ${wordRow.seed}, ${wordRow.timeMs}\n`
+                    csv += `${wordRow.word}, ${wordRow.seed}, ${wordRow.timeMs}, ${wordRow.startTime}, ${wordRow.endTime}\n`
                 };
 
                 // create a blob
@@ -160,11 +162,13 @@
     }
 
     function endTime() {
-        // ------ Stop timer ------
         let end = performance.timeOrigin + performance.now();
         storeLocalStorage(END_TIME, end, "int");
+    }
 
+    function resultTime() {
         let start = getLocalStorage(START_TIME, "int");
+        let end = getLocalStorage(END_TIME, "int");
 
         let time = end - start;
         storeLocalStorage(RESULT_TIME, time, "int");
@@ -218,6 +222,7 @@
     } else {
         window.addEventListener('load', function () {
             endTime();
+            resultTime();
             console.log("It's loaded!");
 
             storeSearchResult();
