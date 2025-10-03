@@ -8,7 +8,7 @@
 // @match        http://cms.webug.se/grupp11/wordpress/wp-admin/post.php*
 // @require      https://raw.githubusercontent.com/LenaSYS/ContextFreeLib/refs/heads/master/js/contextfreegrammar.js
 // @require      https://raw.githubusercontent.com/LenaSYS/Random-Number-Generator/refs/heads/master/seededrandom.js
-// @icon         https://www.google.com/s2/favicons?sz=64&domain=webug.se
+// @icon         data:image/gif;base64,R0lGODlhAQABAAAAACH5BAEKAAEALAAAAAABAAEAAAICTAEAOw==
 // @grant        none
 // ==/UserScript==
 
