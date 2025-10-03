@@ -1,5 +1,5 @@
 // ==UserScript==
-// @name         Measure response time
+// @name         Performance
 // @namespace    http://tampermonkey.net/
 // @version      2025-09-22
 // @description  try to take over the world!

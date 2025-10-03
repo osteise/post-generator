@@ -1,5 +1,5 @@
 // ==UserScript==
-// @name         Classic title and paragraph v2
+// @name         Classic
 // @namespace    http://tampermonkey.net/
 // @version      2025-09-16
 // @description  try to take over the world!
