@@ -108,6 +108,15 @@
         return words;
     }
 
+    function convertEpochMsIntoMS(epochMs) {
+        const date = new Date(epochMs);
+        const minutes = date.getMinutes();
+        const seconds = date.getSeconds();
+        const milliseconds = date.getMilliseconds();
+        const totalMs = (minutes * 60 * 1000) + (seconds * 1000) + milliseconds;
+        return totalMs;
+    }
+
     function saveFilePrompt() {
         const wordRows = getSearchResults();
 
@@ -115,10 +124,13 @@
             return;
         } else {
             if (confirm('Do you want to save search info as CSV?')) {
-                let csv = "Word, seed, TimeMs, StartTime, EndTime \n";
+                let csv = "Word, seed, TimeMs, StartTimeMs, EndTimeMs \n";
 
                 for (const wordRow of wordRows) {
-                    csv += `${wordRow.word}, ${wordRow.seed}, ${wordRow.timeMs}, ${wordRow.startTime}, ${wordRow.endTime}\n`
+                    const startTimeMs = convertEpochMsIntoMS(wordRow.startTime);
+                    const endTimeMs = convertEpochMsIntoMS(wordRow.endTime);
+
+                    csv += `${wordRow.word}, ${wordRow.seed}, ${wordRow.timeMs}, ${startTimeMs}, ${endTimeMs}\n`
                 };
 
                 // create a blob
