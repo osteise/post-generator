@@ -111,10 +111,11 @@
 
     function convertEpochMsIntoMS(epochMs) {
         const date = new Date(epochMs);
+        const hours = date.getHours(); 
         const minutes = date.getMinutes();
         const seconds = date.getSeconds();
         const milliseconds = date.getMilliseconds();
-        const totalMs = (minutes * 60 * 1000) + (seconds * 1000) + milliseconds;
+        const totalMs = (hours * 60 * 60 * 1000) + (minutes * 60 * 1000) + (seconds * 1000) + milliseconds;
         return totalMs;
     }
 
