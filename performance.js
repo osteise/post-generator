@@ -276,6 +276,7 @@
                     localStorage.removeItem(SEARCH_TARGET);
                     localStorage.removeItem(SEARCH_COUNTER);
                     localStorage.removeItem(SEARCH_RESULTS);
+                    localStorage.removeItem(RANDOM_SEED);
                     localStorage.removeItem(RANDOM_WORD);
                     localStorage.removeItem(START_TIME);
                     localStorage.removeItem(END_TIME);
