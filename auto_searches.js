@@ -1,5 +1,5 @@
 // ==UserScript==
-// @name         Measure response time
+// @name         Oskar Measure response time
 // @namespace    http://tampermonkey.net/
 // @version      2025-09-22
 // @description  try to take over the world!
@@ -30,7 +30,6 @@
     const search_target = parseInt(localStorage.getItem('SEARCH_TARGET') ?? '0', 10);
     let search_counter = parseInt(localStorage.getItem('SEARCH_COUNTER') ?? '0', 10);
 
-    // [{word, timeMs, seed, start, end}]
     const SEARCH_RESULTS = 'searchResults';
 
     function fmt(ts) {
@@ -42,14 +41,25 @@
             `${pad(d.getMilliseconds(),3)}`;
     }
 
-    function storeSearchResult(word, timeMs, seed, startTime, endTime) {
+    function getNavMetrics() {
+        const nav = performance.getEntriesByType('navigation')[0];
+        if (nav) {
+            const ttfb = Math.max(0, nav.responseStart - nav.requestStart);
+            return { ttfb_ms: +ttfb.toFixed(3) };
+        } else {
+            return { ttfb_ms: null };
+        }
+    }
+
+    function storeSearchResult(word, timeMs, seed, startTime, endTime, metrics) {
         const arr = getLocalStorage(SEARCH_RESULTS, "json") || [];
         arr.push({
             word,
             timeMs: Number(timeMs),
             seed: Number(seed),
             start: fmt(startTime),
-            end:   fmt(endTime)
+            end:   fmt(endTime),
+            ttfb_ms: metrics?.ttfb_ms ?? null
         });
         storeLocalStorage(SEARCH_RESULTS, arr, "json");
     }
@@ -91,9 +101,16 @@
             if (!confirm('Do you want to save search info as CSV?')) {
                 return;
             } else {
-                let csv = "Word,TimeMs, Seed, Start, End\n";
+                let csv = "Word,TimeTotalMs,Seed,Start,End,TTFBms\n";
                 for (const row of rows) {
-                    csv += `${row.word},${row.timeMs},${row.seed},${row.start},${row.end}\n`;
+                    csv += [
+                        row.word,
+                        row.timeMs,
+                        row.seed,
+                        row.start,
+                        row.end,
+                        (row.ttfb_ms ?? "")
+                    ].join(",") + "\n";
                 }
                 const dataBlob = new Blob([csv], { type: "text/csv" });
                 const objUrl = URL.createObjectURL(dataBlob);
@@ -135,7 +152,8 @@
             const endMs = Date.now();
             const time = endMs - startMs;
 
-            storeSearchResult(word, Number(time.toFixed(3)), seed, startMs, endMs);
+            const metrics = getNavMetrics();
+            storeSearchResult(word, Number(time.toFixed(3)), seed, startMs, endMs, metrics);
 
             // clear search and reset counter
             sessionStorage.removeItem(P_START);
@@ -168,7 +186,7 @@
         searchWord(randomWord);
     }
 
-    // Start the program
+    // start the program
     window.addEventListener('load', function () {
         console.log("It's loaded!");
         resultPage();
