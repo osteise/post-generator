@@ -15,6 +15,8 @@
     'use strict';
 
     // Your code here...
+    const ITERATION_TARGET = "ITERATION_TARGET";
+    const ITERATION_COUNTER = "ITERATION_COUNTER"
     const SEARCH_TARGET = "SEARCH_TARGET";
     const SEARCH_COUNTER = "SEARCH_COUNTER";
     const SEARCH_RESULTS = 'searchResults'; // [{word, seed, timeMs}
@@ -24,20 +26,19 @@
     const END_TIME = 'endTime';
     const RESULT_TIME = 'resultTime';
 
-    function showPrompt() {
-        // Ask how many searches to run, if its missing
-        if (!getLocalStorage(SEARCH_TARGET, "int")) {
-
-            let response = prompt('How many searches do you want to make?', '5');
+    function showPrompt(targetKey, counterKey, promptMessage, defaultValue, initialCounterValue = 0) {
+        // Only prompt if target value is missing
+        if (!getLocalStorage(targetKey, "int")) {
+            
+            const response = prompt(promptMessage, String(defaultValue));
             if (response) {
-                // default value = 5, 10 is to tell the browser its an integer
                 const n = parseInt(response, 10);
                 if (!Number.isFinite(n) || n <= 0) {
                     return;
                 }
 
-                storeLocalStorage(SEARCH_TARGET, n, "int");
-                storeLocalStorage(SEARCH_COUNTER, 0, "int");
+                storeLocalStorage(targetKey, n, "int");
+                storeLocalStorage(counterKey, initialCounterValue, "int");
                 return true;
             } else {
                 return false;
@@ -108,6 +109,16 @@
         return words;
     }
 
+    function convertEpochMsIntoMS(epochMs) {
+        const date = new Date(epochMs);
+        const hours = date.getHours(); 
+        const minutes = date.getMinutes();
+        const seconds = date.getSeconds();
+        const milliseconds = date.getMilliseconds();
+        const totalMs = (hours * 60 * 60 * 1000) + (minutes * 60 * 1000) + (seconds * 1000) + milliseconds;
+        return totalMs;
+    }
+
     function saveFilePrompt() {
         const wordRows = getSearchResults();
 
@@ -115,10 +126,13 @@
             return;
         } else {
             if (confirm('Do you want to save search info as CSV?')) {
-                let csv = "Word, seed, TimeMs, StartTime, EndTime \n";
+                let csv = "Word, seed, TimeMs, StartTimeMs, EndTimeMs \n";
 
                 for (const wordRow of wordRows) {
-                    csv += `${wordRow.word}, ${wordRow.seed}, ${wordRow.timeMs}, ${wordRow.startTime}, ${wordRow.endTime}\n`
+                    const startTimeMs = convertEpochMsIntoMS(wordRow.startTime);
+                    const endTimeMs = convertEpochMsIntoMS(wordRow.endTime);
+
+                    csv += `${wordRow.word}, ${wordRow.seed}, ${wordRow.timeMs}, ${startTimeMs}, ${endTimeMs}\n`
                 };
 
                 // create a blob
@@ -214,8 +228,20 @@
     const url = window.location.href;
 
     if (url.endsWith("wordpress/")) {
-        if (showPrompt()) {
-            run();
+        let promptMessage = "How many searches do you want to make?";
+        let defaultValue = 5;
+        let initialCounterValue = 0;
+
+        if (showPrompt(SEARCH_TARGET, SEARCH_COUNTER, promptMessage, defaultValue, initialCounterValue)) {
+            promptMessage = "How many iteration do you want to make?"
+            defaultValue = 1;
+            initialCounterValue = 1;
+
+            if (showPrompt(ITERATION_TARGET, ITERATION_COUNTER, promptMessage, defaultValue, initialCounterValue)) {
+                run();
+            } else {
+                console.log("canceled");
+            }
         } else {
             console.log("canceled");
         }
@@ -233,14 +259,29 @@
             if (Number(search_counter) < Number(search_target)) {
                 run();
             } else {
-                saveFilePrompt();
-                localStorage.removeItem(SEARCH_TARGET);
-                localStorage.removeItem(SEARCH_COUNTER);
-                localStorage.removeItem(SEARCH_RESULTS);
-                localStorage.removeItem(RANDOM_WORD);
-                localStorage.removeItem(START_TIME);
-                localStorage.removeItem(END_TIME);
-                localStorage.removeItem(RESULT_TIME);
+                const iterationTarget = getLocalStorage(ITERATION_TARGET, "int");
+                let iterationCounter = getLocalStorage(ITERATION_COUNTER, "int");
+                
+                if (iterationCounter < iterationTarget) {
+                    search_counter = 0;
+                    storeLocalStorage(SEARCH_COUNTER, search_counter, "int");
+
+                    iterationCounter++
+                    storeLocalStorage(ITERATION_COUNTER, iterationCounter, "int");
+                    run();
+                } else {
+                    saveFilePrompt();
+                    localStorage.removeItem(ITERATION_TARGET);
+                    localStorage.removeItem(ITERATION_COUNTER);
+                    localStorage.removeItem(SEARCH_TARGET);
+                    localStorage.removeItem(SEARCH_COUNTER);
+                    localStorage.removeItem(SEARCH_RESULTS);
+                    localStorage.removeItem(RANDOM_SEED);
+                    localStorage.removeItem(RANDOM_WORD);
+                    localStorage.removeItem(START_TIME);
+                    localStorage.removeItem(END_TIME);
+                    localStorage.removeItem(RESULT_TIME);
+                }
             }
         })
     }
